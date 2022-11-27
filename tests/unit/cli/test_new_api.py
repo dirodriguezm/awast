@@ -26,5 +26,7 @@ def assert_dockerfile_created(tmp_path: Path):
 
 def test_new_flaskapi():
     with runner.isolated_filesystem():
-        result = runner.invoke(app, ["new-api", "test-api", "--framework", "Flask"])
+        result = runner.invoke(
+            app, ["new-api", "test-api", "--framework", "Flask"]
+        )
         assert result.exit_code == 0
