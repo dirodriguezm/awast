@@ -15,7 +15,7 @@ def add_root(app):
 
     @app.get("/")
     def root():
-        return {"message", "Hello World"}
+        return {"message": "Hello World"}
 
 
 def add_metrics(app):
