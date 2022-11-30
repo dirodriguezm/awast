@@ -14,14 +14,26 @@ spec:
       labels:
         app: {{name}}
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - {{environment}}-web-services
+    spec:
       containers:
         - name: {{name}}
           image: ghcr.io/alercebroker/{{name}}:{{version}}
           imagePullPolicy: Always
           ports:
-            - containerPort: 8000
+            - containerPort: {{port}}
+          {% if resources.requests %}
           resources:
             requests:
-              memory: {{mem_request}}
-              cpu: {{cpu_request}}
+              memory: {{resources.requests.mem}}
+              cpu: {{resources.requests.cpu}}
+          {% endif %}
       restartPolicy: Always

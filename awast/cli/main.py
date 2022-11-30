@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List, Optional
 import typer
 from awast.cli.fastapi.new_api import new_api as new_fastapi
 from awast.cli.kubernetes.new_deployment import create_deployment
@@ -23,12 +24,9 @@ def new_api(name: str, framework: Framework = Framework.fastapi):
     print("Success")
 
 
-@app.command()
-def new_deployment(
-    name: str, version="latest", mem_request="128M", cpu_request="100m"
-):
+def new_deployment(name: str, set: List[str] = typer.Option([])):
     print(f"Creating new deployment: {name}")
-    create_deployment(name, version, mem_request, cpu_request)
+    create_deployment(name)
     print("Success")
 
 
