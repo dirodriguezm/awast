@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Optional
 import typer
 from awast.cli.fastapi.new_api import new_api as new_fastapi
-from awast.cli.kubernetes.new_deployment import create_deployment
+from awast.cli.kubernetes.new_deployment import new_deployment, value_parser
 
 
 class Framework(str, Enum):
@@ -13,8 +13,8 @@ class Framework(str, Enum):
 app = typer.Typer()
 
 
-@app.command()
-def new_api(name: str, framework: Framework = Framework.fastapi):
+@app.command(name="new-api")
+def new_api_cli(name: str, framework: Framework = Framework.fastapi):
     print(f"Creating new API: {name}")
     print(f"Using templates for framework: {framework.value}")
     if framework.value == Framework.fastapi:
@@ -24,9 +24,10 @@ def new_api(name: str, framework: Framework = Framework.fastapi):
     print("Success")
 
 
-def new_deployment(name: str, set: List[str] = typer.Option([])):
+@app.command(name="new-deployment")
+def new_deployment_cli(name: str, set: List[str] = typer.Option([])):
     print(f"Creating new deployment: {name}")
-    create_deployment(name, set)
+    new_deployment(name, set, value_parser)
     print("Success")
 
 

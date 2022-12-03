@@ -1,0 +1,18 @@
+---
+# Name for the API
+name:
+
+# Environment used to define node affinity
+environment:
+
+# Version for the API container image
+version: latest
+
+# Port that the API runs in
+port: 8000
+
+# Resource requests for the container
+resources:
+  requests:
+    memory:
+    cpu:

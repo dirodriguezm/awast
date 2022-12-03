@@ -26,10 +26,10 @@ spec:
     spec:
       containers:
         - name: {{name}}
-          image: ghcr.io/alercebroker/{{name}}:{{version}}
+          image: ghcr.io/alercebroker/{{name}}:{{version|default("latest")}}
           imagePullPolicy: Always
           ports:
-            - containerPort: {{port}}
+            - containerPort: {{port|default("8000")}}
           {% if resources.requests %}
           resources:
             requests:

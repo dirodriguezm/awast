@@ -3,6 +3,7 @@ from awast.cli.utils import create_file
 from typing import Dict, List, Callable, Union
 from pathlib import Path
 import re
+import yaml
 
 MODULE_PATH = os.path.dirname(os.path.abspath(__file__))
 AWAST_PATH = os.path.abspath(os.path.join(MODULE_PATH, "../.."))
@@ -27,12 +28,17 @@ def create_deployment_file(
     if not os.path.exists(os.path.join(output_path, "deployment")):
         os.mkdir(os.path.join(output_path, "deployment"))
 
+    values = merge_values(
+        get_default_values(Path(TEMPLATE_PATH) / "deployment.values.yaml"),
+        values,
+    )
+    values["name"] = deployment_name
+
     create_file(
         TEMPLATE_PATH,
-        "deployment",
+        "deployment.jinja",
         output_path,
         "deployment/deployment.yaml",
-        name=deployment_name,
         **values,
     )
 
@@ -67,3 +73,11 @@ def parse_nested(nested: List[str], result: dict):
         var = key.split("=")[0]
         value = key.split("=")[1]
         result[var] = value
+
+
+def get_default_values(values_file: Path) -> dict:
+    return yaml.load(values_file.read_text(), yaml.CLoader)
+
+
+def merge_values(dict1: dict, dict2: dict):
+    return dict1 | dict2
