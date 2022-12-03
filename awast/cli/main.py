@@ -26,7 +26,7 @@ def new_api(name: str, framework: Framework = Framework.fastapi):
 
 def new_deployment(name: str, set: List[str] = typer.Option([])):
     print(f"Creating new deployment: {name}")
-    create_deployment(name)
+    create_deployment(name, set)
     print("Success")
 
 
