@@ -1,9 +1,7 @@
 import os
-from awast.cli.utils import create_file
-from typing import Dict, List, Callable, Union
+from awast.cli.utils import create_file, merge_values, get_default_values
 from pathlib import Path
-import re
-import yaml
+from typing import List, Callable
 
 MODULE_PATH = os.path.dirname(os.path.abspath(__file__))
 AWAST_PATH = os.path.abspath(os.path.join(MODULE_PATH, "../.."))
@@ -41,43 +39,3 @@ def create_deployment_file(
         "deployment/deployment.yaml",
         **values,
     )
-
-
-def value_parser(values: List[str]):
-    result = {}
-    for val in values:
-        nested = val.split(".")
-        is_nested = len(nested) > 1
-        if is_nested:
-            parse_nested(nested, result)
-        else:
-            valid = re.search(r"^\w+\=\w+$", val)
-            if valid:
-                splitted = val.split("=")
-                key = splitted[0]
-                value = splitted[1]
-                result[key] = value
-            else:
-                raise ValueError(f"Provided value {val} is invalid")
-    return result
-
-
-def parse_nested(nested: List[str], result: dict):
-    key = nested.pop(0)
-    assignment = re.search(r"^\w+\=\w+$", key)
-    if not assignment:
-        if key not in result:
-            result[key] = {}
-        parse_nested(nested, result[key])
-    else:
-        var = key.split("=")[0]
-        value = key.split("=")[1]
-        result[var] = value
-
-
-def get_default_values(values_file: Path) -> dict:
-    return yaml.load(values_file.read_text(), yaml.CLoader)
-
-
-def merge_values(dict1: dict, dict2: dict):
-    return dict1 | dict2
