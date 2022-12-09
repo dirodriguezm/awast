@@ -1,4 +1,5 @@
 import os
+from re import TEMPLATE
 from awast.cli.utils import (
     create_poetry_project,
     create_file,
@@ -34,7 +35,7 @@ def new_api(name: str, values: List[str], value_parser: Callable):
     create_dockerfile(arguments)
 
     # Create github actions for tests
-    create_github_actions()
+    create_github_actions(arguments)
 
 
 def create_app_file(arguments: Callable):
@@ -61,6 +62,9 @@ def create_dockerfile(arguments: Callable):
 
 
 def create_github_actions(arguments: Callable):
+    _, output_path, _ = arguments()
+    if not os.path.exists(os.path.join(output_path, ".github", "workflows")):
+        os.makedirs(os.path.join(output_path, ".github", "workflows"))
     create_unittest_action(arguments)
     create_build_action(arguments)
     create_build_staging_action(arguments)
@@ -70,8 +74,6 @@ def create_github_actions(arguments: Callable):
 
 def create_unittest_action(arguments: Callable):
     _, output_path, values = arguments()
-    if not os.path.exists(os.path.join(output_path, ".github", "workflows")):
-        os.makedirs(os.path.join(output_path, ".github", "workflows"))
     values = merge_values(
         get_default_values(
             pathlib.Path(TEMPLATE_PATH) / "unit_test.values.yaml"
@@ -84,4 +86,60 @@ def create_unittest_action(arguments: Callable):
         output_path,
         ".github/workflows/unit_test.yaml",
         **values,
+    )
+
+
+def create_build_action(arguments: Callable):
+    _, output_path, _ = arguments()
+    create_file(
+        TEMPLATE_PATH,
+        "build.yaml.jinja",
+        output_path,
+        ".github/workflows/build.yaml",
+    )
+
+
+def create_build_staging_action(arguments: Callable):
+    name, output_path, values = arguments()
+    values = merge_values(
+        get_default_values(
+            pathlib.Path(TEMPLATE_PATH) / "build_staging.values.yaml"
+        ),
+        values,
+    )
+    values["name"] = name
+    create_file(
+        TEMPLATE_PATH,
+        "build_staging.yaml.jinja",
+        output_path,
+        ".github/workflows/build_staging.yaml",
+        **values,
+    )
+
+
+def create_build_production_action(arguments: Callable):
+    name, output_path, values = arguments()
+    values = merge_values(
+        get_default_values(
+            pathlib.Path(TEMPLATE_PATH) / "build_production.values.yaml"
+        ),
+        values,
+    )
+    values["name"] = name
+    create_file(
+        TEMPLATE_PATH,
+        "build_production.yaml.jinja",
+        output_path,
+        ".github/workflows/build_production.yaml",
+        **values,
+    )
+
+
+def create_move_issue_action(arguments: Callable):
+    _, output_path, _ = arguments()
+    create_file(
+        TEMPLATE_PATH,
+        "move_issue.yaml.jinja",
+        output_path,
+        ".github/workflows/move_issue.yaml",
     )
