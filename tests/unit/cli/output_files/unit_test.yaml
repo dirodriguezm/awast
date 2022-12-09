@@ -1,0 +1,37 @@
+name: unittest
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Install poetry
+        run: |
+          export POETRY_HOME=/opt/poetry
+          python -m venv $POETRY_HOME
+          $POETRY_HOME/bin/pip install poetry==1.2.0
+          $POETRY_HOME/bin/poetry --version
+      - name: Install package
+        run: |
+          export POETRY_HOME=/opt/poetry
+          $POETRY_HOME/bin/poetry install
+      - name: Test with pytest
+        run: |
+          export POETRY_HOME=/opt/poetry
+          $POETRY_HOME/bin/poetry run coverage run --source test_source -m pytest tests/unit
+          coverage xml
+      - name: Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests

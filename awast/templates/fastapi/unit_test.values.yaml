@@ -1,0 +1,10 @@
+---
+# Python Version for the GH Action
+python_version: "3.10"
+
+# Poetry version for the GH Action
+poetry_version: "1.2.0"
+
+# source package directory to get coverage from during testing
+# this is passed to coverage command with the --source argument
+coverage_source:

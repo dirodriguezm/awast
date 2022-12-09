@@ -1,0 +1,3 @@
+# Name for the API
+# This goes into the ghcr package URL
+name:
