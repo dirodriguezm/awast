@@ -9,6 +9,9 @@ from pathlib import Path
 
 def create_poetry_project(name):
     subprocess.run(["poetry", "new", name], check=True)
+    subprocess.run(
+        ["poetry", "add", "https://github.com/dirodriguezm/awast}"], check=True
+    )
 
 
 def get_template(template_path: str, filename: str):
