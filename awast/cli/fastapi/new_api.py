@@ -6,6 +6,7 @@ from awast.cli.utils import (
     create_file_arguments,
     get_default_values,
     merge_values,
+    update_poetry_project,
 )
 from typing import Callable, List
 import pathlib
@@ -22,11 +23,15 @@ def new_api(name: str, values: List[str], value_parser: Callable):
     if os.path.exists(output_path):
         raise Exception("Output directory already exist.")
 
-    create_poetry_project(name)
-
     parsed_values = value_parser(values)
 
     arguments = create_file_arguments(name, output_path, parsed_values)
+
+    create_poetry_project(name)
+
+    create_pyproject_file(arguments)
+
+    update_poetry_project(name)
 
     # Create the app.py file inside project
     create_app_file(arguments)
@@ -36,6 +41,17 @@ def new_api(name: str, values: List[str], value_parser: Callable):
 
     # Create github actions for tests
     create_github_actions(arguments)
+
+
+def create_pyproject_file(arguments: Callable):
+    name, output_path, values = arguments()
+    create_file(
+        template_path=TEMPLATE_PATH,
+        template_name="pyproject.toml.jinja",
+        app_path=output_path,
+        filename="pyproject.toml",
+        name=name,
+    )
 
 
 def create_app_file(arguments: Callable):
