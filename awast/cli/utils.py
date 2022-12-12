@@ -9,8 +9,11 @@ from pathlib import Path
 
 def create_poetry_project(name):
     subprocess.run(["poetry", "new", name], check=True)
+
+
+def update_poetry_project(name):
     subprocess.run(
-        ["poetry", "add", "https://github.com/dirodriguezm/awast}"], check=True
+        ["poetry", "update"], check=True, cwd=os.path.join(os.getcwd(), name)
     )
 
 

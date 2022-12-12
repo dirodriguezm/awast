@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "{{name}}"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "{{name}}"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+awast = { git = "https://github.com/dirodriguezm/awast" }
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
