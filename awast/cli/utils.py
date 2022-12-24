@@ -1,10 +1,10 @@
 import subprocess
 import jinja2
-import os
-from typing import List
+from typing import List, Callable
 import re
 import yaml
 from pathlib import Path
+from dataclasses import dataclass
 
 
 def create_poetry_project(name):
@@ -12,9 +12,7 @@ def create_poetry_project(name):
 
 
 def update_poetry_project(name):
-    subprocess.run(
-        ["poetry", "update"], check=True, cwd=os.path.join(os.getcwd(), name)
-    )
+    subprocess.run(["poetry", "update"], check=True, cwd=Path.cwd() / name)
 
 
 def get_template(template_path: str, filename: str):
@@ -24,16 +22,20 @@ def get_template(template_path: str, filename: str):
 
 
 def create_file(
-    template_path: str,
+    template_path: Path,
     template_name: str,
-    app_path: str,
+    app_path: Path,
     filename: str,
     **template_args,
 ):
-    with open(os.path.join(app_path, filename), "w", encoding="utf-8") as f:
-        f.write(
-            get_template(template_path, template_name).render(**template_args)
-        )
+    final_path = app_path / filename
+    final_path.touch()
+    final_path.write_text(
+        get_template(str(template_path), template_name).render(
+            **template_args
+        ),
+        "utf-8",
+    )
 
 
 def value_parser(values: List[str]):
@@ -76,8 +78,21 @@ def merge_values(dict1: dict, dict2: dict):
     return dict1 | dict2
 
 
-def create_file_arguments(name, output_path, parsed_values):
-    def unpack_arguments():
-        return name, output_path, parsed_values
+@dataclass
+class CreateFileArguments:
+    """
+    Arguments for the create file function
+    """
+
+    name: str
+    output_path: Path
+    parsed_values: dict
+
+
+def create_file_arguments(
+    name: str, output_path: Path, parsed_values: dict
+) -> Callable:
+    def unpack_arguments() -> CreateFileArguments:
+        return CreateFileArguments(name, output_path, parsed_values)
 
     return unpack_arguments
