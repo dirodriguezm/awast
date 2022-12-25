@@ -1,20 +1,33 @@
+import pathlib
 from typer.testing import CliRunner
 from awast.cli.main import app
-import pathlib
-from awast.cli.utils import create_file_arguments
-from awast.cli.fastapi.new_api import (
+from tests.unit.cli.utils import assert_app_created, assert_dockerfile_created
+from awast.cli.utils import (
     create_unittest_action,
     create_build_action,
     create_build_staging_action,
     create_build_production_action,
     create_move_issue_action,
     create_github_actions,
+    create_file_arguments,
 )
 
 runner = CliRunner()
 
 TESTS_PATH = pathlib.Path.cwd() / "tests"
 TESTS_OUTPUT_FILES = TESTS_PATH / "unit" / "cli" / "output_files"
+TEMPLATE_PATH = (pathlib.Path.cwd() / "awast/templates/api").resolve()
+
+
+def test_new_flask(tmp_path):
+    with runner.isolated_filesystem(temp_dir=tmp_path) as td:
+        test_path = pathlib.Path(td)
+        result = runner.invoke(
+            app, ["new-api", "test_api", "--framework", "Flask"]
+        )
+        assert result.exit_code == 0
+        assert_app_created(test_path)
+        assert_dockerfile_created(test_path)
 
 
 def test_new_fastapi(tmp_path):
@@ -26,19 +39,13 @@ def test_new_fastapi(tmp_path):
         assert_dockerfile_created(test_path)
 
 
-def assert_app_created(tmp_path: pathlib.Path):
-    app_path = tmp_path / "test_api" / "test_api" / "app.py"
-    assert app_path.is_file()
-
-
-def assert_dockerfile_created(tmp_path: pathlib.Path):
-    app_path = tmp_path / "test_api" / "Dockerfile"
-    assert app_path.is_file()
-
-
 def test_create_unittest_action(tmp_path: pathlib.Path):
     arguments = create_file_arguments(
-        "test-api", tmp_path, {"coverage_source": "test_source"}
+        "test-api",
+        tmp_path,
+        {"coverage_source": "test_source"},
+        template_path=TEMPLATE_PATH,
+        framework="fastapi",
     )
     result_path = tmp_path / ".github" / "workflows"
     result_path.mkdir(parents=True)
@@ -47,7 +54,9 @@ def test_create_unittest_action(tmp_path: pathlib.Path):
 
 
 def test_create_build_action(tmp_path: pathlib.Path):
-    arguments = create_file_arguments("test-api", tmp_path, {})
+    arguments = create_file_arguments(
+        "test-api", tmp_path, {}, TEMPLATE_PATH, "fastapi"
+    )
     result_path = tmp_path / ".github" / "workflows"
     result_path.mkdir(parents=True)
     create_build_action(arguments)
@@ -55,7 +64,9 @@ def test_create_build_action(tmp_path: pathlib.Path):
 
 
 def test_create_build_staging_action(tmp_path: pathlib.Path):
-    arguments = create_file_arguments("test-api", tmp_path, {})
+    arguments = create_file_arguments(
+        "test-api", tmp_path, {}, TEMPLATE_PATH, "fastapi"
+    )
     result_path = tmp_path / ".github" / "workflows"
     result_path.mkdir(parents=True)
     create_build_staging_action(arguments)
@@ -63,7 +74,9 @@ def test_create_build_staging_action(tmp_path: pathlib.Path):
 
 
 def test_create_build_production_action(tmp_path: pathlib.Path):
-    arguments = create_file_arguments("test-api", tmp_path, {})
+    arguments = create_file_arguments(
+        "test-api", tmp_path, {}, TEMPLATE_PATH, "fastapi"
+    )
     result_path = tmp_path / ".github" / "workflows"
     result_path.mkdir(parents=True)
     create_build_production_action(arguments)
@@ -71,7 +84,9 @@ def test_create_build_production_action(tmp_path: pathlib.Path):
 
 
 def test_create_move_issue_action(tmp_path: pathlib.Path):
-    arguments = create_file_arguments("test-api", tmp_path, {})
+    arguments = create_file_arguments(
+        "test-api", tmp_path, {}, TEMPLATE_PATH, "fastapi"
+    )
     result_path = tmp_path / ".github" / "workflows"
     result_path.mkdir(parents=True)
     create_move_issue_action(arguments)
@@ -80,7 +95,11 @@ def test_create_move_issue_action(tmp_path: pathlib.Path):
 
 def test_create_github_actions(tmp_path: pathlib.Path):
     arguments = create_file_arguments(
-        "test-api", tmp_path, {"coverage_source": "test_source"}
+        "test-api",
+        tmp_path,
+        {"coverage_source": "test_source"},
+        TEMPLATE_PATH,
+        "fastapi",
     )
     result_path = tmp_path / ".github" / "workflows"
     create_github_actions(arguments)

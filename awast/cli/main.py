@@ -1,7 +1,8 @@
 from enum import Enum
 from typing import List, Optional
 import typer
-from awast.cli.fastapi.new_api import new_api as new_fastapi
+from awast.cli.fastapi.new_api import new_fastapi
+from awast.cli.flask.new_api import new_flask
 from awast.cli.kubernetes.new_deployment import new_deployment
 from awast.cli.utils import value_parser
 
@@ -25,7 +26,7 @@ def new_api_cli(
     if framework.value == Framework.fastapi:
         new_fastapi(name, set, value_parser)
     if framework.value == Framework.flask:
-        raise NotImplementedError("Flask templates are not implemented yet")
+        new_flask(name, set, value_parser)
     print("Success")
 
 
