@@ -87,12 +87,173 @@ class CreateFileArguments:
     name: str
     output_path: Path
     parsed_values: dict
+    template_path: Path
+    framework: str
 
 
 def create_file_arguments(
-    name: str, output_path: Path, parsed_values: dict
+    name: str,
+    output_path: Path,
+    parsed_values: dict,
+    template_path: Path,
+    framework: str,
 ) -> Callable:
     def unpack_arguments() -> CreateFileArguments:
-        return CreateFileArguments(name, output_path, parsed_values)
+        return CreateFileArguments(
+            name, output_path, parsed_values, template_path, framework
+        )
 
     return unpack_arguments
+
+
+def create_pyproject_file(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    create_file(
+        template_path=args.template_path,
+        template_name="pyproject.toml.jinja",
+        app_path=args.output_path,
+        filename="pyproject.toml",
+        name=args.name,
+    )
+
+
+def create_app_file(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    create_file(
+        template_path=args.template_path / args.framework,
+        template_name="app.py.jinja",
+        app_path=args.output_path,
+        filename=f"{args.name}/app.py",
+        **args.parsed_values,
+    )
+
+
+def create_dockerfile(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    create_file(
+        template_path=args.template_path / args.framework,
+        template_name="Dockerfile.jinja",
+        app_path=args.output_path,
+        filename="Dockerfile",
+        package=args.name,
+        **args.parsed_values,
+    )
+
+
+def create_github_actions(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    if not (args.output_path / ".github/workflows").exists():
+        (args.output_path / ".github/workflows").mkdir(parents=True)
+    create_unittest_action(arguments)
+    create_build_action(arguments)
+    create_build_staging_action(arguments)
+    create_build_production_action(arguments)
+    create_move_issue_action(arguments)
+
+
+def create_unittest_action(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    values = merge_values(
+        get_default_values(Path(args.template_path) / "unit_test.values.yaml"),
+        args.parsed_values,
+    )
+    create_file(
+        args.template_path,
+        "unit_test.yaml.jinja",
+        args.output_path,
+        ".github/workflows/unit_test.yaml",
+        **values,
+    )
+
+
+def create_build_action(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    create_file(
+        args.template_path,
+        "build.yaml.jinja",
+        args.output_path,
+        ".github/workflows/build.yaml",
+    )
+
+
+def create_build_staging_action(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    values = merge_values(
+        get_default_values(
+            Path(args.template_path) / "build_staging.values.yaml"
+        ),
+        args.parsed_values,
+    )
+    values["name"] = args.name
+    create_file(
+        args.template_path,
+        "build_staging.yaml.jinja",
+        args.output_path,
+        ".github/workflows/build_staging.yaml",
+        **values,
+    )
+
+
+def create_build_production_action(
+    arguments: Callable[[], CreateFileArguments]
+):
+    args = arguments()
+    values = merge_values(
+        get_default_values(
+            Path(args.template_path) / "build_production.values.yaml"
+        ),
+        args.parsed_values,
+    )
+    values["name"] = args.name
+    create_file(
+        args.template_path,
+        "build_production.yaml.jinja",
+        args.output_path,
+        ".github/workflows/build_production.yaml",
+        **values,
+    )
+
+
+def create_move_issue_action(arguments: Callable[[], CreateFileArguments]):
+    args = arguments()
+    create_file(
+        args.template_path,
+        "move_issue.yaml.jinja",
+        args.output_path,
+        ".github/workflows/move_issue.yaml",
+    )
+
+
+def new_api(
+    name: str,
+    template_path: Path,
+    values: List[str],
+    value_parser: Callable,
+    framework: str,
+):
+    base = Path.cwd()
+
+    output_path = base / name
+    if output_path.exists():
+        raise Exception("Output directory already exist.")
+
+    parsed_values = value_parser(values)
+
+    arguments = create_file_arguments(
+        name, output_path, parsed_values, template_path, framework
+    )
+
+    create_poetry_project(name)
+
+    create_pyproject_file(arguments)
+
+    update_poetry_project(name)
+
+    # Create the app.py file inside project
+    create_app_file(arguments)
+
+    # Create Dockerfile inside project
+    create_dockerfile(arguments)
+
+    # Create github actions for tests
+    create_github_actions(arguments)

@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import List, Optional
 import typer
-from awast.cli.fastapi.new_api import new_api as new_fastapi
-from awast.cli.flask.new_api import new_api as new_flask
+from awast.cli.fastapi.new_api import new_fastapi
+from awast.cli.flask.new_api import new_flask
 from awast.cli.kubernetes.new_deployment import new_deployment
 from awast.cli.utils import value_parser
 

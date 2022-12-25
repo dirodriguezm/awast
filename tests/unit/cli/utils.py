@@ -3,7 +3,6 @@ import pathlib
 
 def assert_app_created(tmp_path: pathlib.Path):
     app_path = tmp_path / "test_api" / "test_api" / "app.py"
-    print("check file", app_path)
     assert app_path.is_file()
 
 
