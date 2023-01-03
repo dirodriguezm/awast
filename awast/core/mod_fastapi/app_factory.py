@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from dataclasses import dataclass
 
 
 def create_app(*args, **kwargs):
@@ -10,10 +11,15 @@ def create_app(*args, **kwargs):
     return app
 
 
+@dataclass
+class RootResponse:
+    message: str
+
+
 def add_root(app):
     """Adds a root endpoint with simple message to the app"""
 
-    @app.get("/")
+    @app.get("/", response_model=RootResponse)
     def root():
         return {"message": "Hello World"}
 
