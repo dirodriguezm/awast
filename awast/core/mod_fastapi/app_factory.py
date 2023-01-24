@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from dataclasses import dataclass
+from starlette_prometheus import metrics, PrometheusMiddleware
 
 
 def create_app(*args, **kwargs):
@@ -24,9 +25,10 @@ def add_root(app):
         return {"message": "Hello World"}
 
 
-def add_metrics(app):
+def add_metrics(app: FastAPI):
     """Adds metrics exporting to app"""
-    pass
+    app.add_middleware(PrometheusMiddleware)
+    app.add_route("/metrics/", metrics)
 
 
 def add_ralidator(app):
