@@ -1,30 +1,31 @@
+from awast.cli.kubernetes.new_deployment import pathlib as tpathlib
 from awast.cli.kubernetes.new_deployment import (
     new_deployment,
     create_deployment_file,
 )
 from awast.cli.utils import value_parser
-import os
+import pathlib
 
 
 def test_new_deployment_with_values(mocker):
     create_deployment_file_mock = mocker.patch(
         "awast.cli.kubernetes.new_deployment.create_deployment_file"
     )
-    getcwd = mocker.patch("os.getcwd")
-    getcwd.return_value = "/tmp"
-    mocker.patch("os.mkdir")
+    getcwd = mocker.patch.object(tpathlib.Path, "cwd")
+    getcwd.return_value = pathlib.Path("/tmp")
+    mocker.patch.object(tpathlib.Path, "mkdir")
     new_deployment(
         "test-api", ["version=1", "resources.requests.cpu=10m"], value_parser
     )
     create_deployment_file_mock.assert_called_with(
         "test-api",
-        "/tmp/test-api",
+        pathlib.Path("/tmp/test-api"),
         {"version": "1", "resources": {"requests": {"cpu": "10m"}}},
     )
 
 
 def test_create_deployment_file(tmp_path):
-    os.mkdir(tmp_path / "test-api")
+    (tmp_path / "test-api").mkdir()
     values = {
         "environment": "test",
         "version": "1",
