@@ -15,8 +15,9 @@ def test_app_has_root(client):
     assert response.json() == {"message": "Hello World"}
 
 
-def test_app_has_metrics(client):
-    raise NotImplementedError("Test not implemented yet")
+def test_app_has_metrics(client: TestClient):
+    response = client.get("/metrics")
+    assert response.status_code == 200
 
 
 def test_app_has_ralidator(client):
