@@ -13,6 +13,7 @@ def create_app(*args, **kwargs):
         app,
         config=kwargs["ralidator_config"],
         filters_map=kwargs["ralidator_filters_map"],
+        ignore_paths=kwargs["ralidator_ignore_paths"],
     )
     return app
 
@@ -33,11 +34,16 @@ def add_root(app):
 def add_metrics(app: FastAPI):
     """Adds metrics exporting to app"""
     app.add_middleware(PrometheusMiddleware)
-    app.add_route("/metrics/", metrics)
+    app.add_route("/metrics", metrics)
 
 
-def add_ralidator(app: FastAPI, config: dict, filters_map: dict):
+def add_ralidator(
+    app: FastAPI, config: dict, filters_map: dict, ignore_paths: list
+):
     """Adds the Ralidator library extension to the app"""
     app.add_middleware(
-        RalidatorStarlette, config=config, filters_map=filters_map
+        RalidatorStarlette,
+        config=config,
+        filters_map=filters_map,
+        ignore_paths=ignore_paths,
     )

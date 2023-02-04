@@ -712,7 +712,7 @@ ralidator_core = {git = "git@github.com:alercebroker/ralidator-core.git", branch
 type = "git"
 url = "https://github.com/alercebroker/ralidator-fastapi.git"
 reference = "HEAD"
-resolved_reference = "10e271b0593015598efd655a9bbd849b002e96a1"
+resolved_reference = "d1dd4672dfc7ad622ae3a9bba82e77cbbe6d3afb"
 
 [[package]]
 name = "requests"

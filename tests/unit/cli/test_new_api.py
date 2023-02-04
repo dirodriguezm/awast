@@ -43,7 +43,15 @@ def test_create_unittest_action(tmp_path: pathlib.Path):
     arguments = create_file_arguments(
         "test-api",
         tmp_path,
-        {"coverage_source": "test_source"},
+        {
+            "workflows": {
+                "test": {
+                    "coverage_source": "test_source",
+                    "python_version": "3.10",
+                    "poetry_version": "1.2.0",
+                }
+            }
+        },
         template_path=TEMPLATE_PATH,
         framework="fastapi",
     )
@@ -65,7 +73,11 @@ def test_create_build_action(tmp_path: pathlib.Path):
 
 def test_create_build_staging_action(tmp_path: pathlib.Path):
     arguments = create_file_arguments(
-        "test-api", tmp_path, {}, TEMPLATE_PATH, "fastapi"
+        "test-api",
+        tmp_path,
+        {"workflows": {"build": {"staging": {}}}},
+        TEMPLATE_PATH,
+        "fastapi",
     )
     result_path = tmp_path / ".github" / "workflows"
     result_path.mkdir(parents=True)
@@ -75,7 +87,11 @@ def test_create_build_staging_action(tmp_path: pathlib.Path):
 
 def test_create_build_production_action(tmp_path: pathlib.Path):
     arguments = create_file_arguments(
-        "test-api", tmp_path, {}, TEMPLATE_PATH, "fastapi"
+        "test-api",
+        tmp_path,
+        {"workflows": {"build": {"production": {}}}},
+        TEMPLATE_PATH,
+        "fastapi",
     )
     result_path = tmp_path / ".github" / "workflows"
     result_path.mkdir(parents=True)
@@ -97,7 +113,16 @@ def test_create_github_actions(tmp_path: pathlib.Path):
     arguments = create_file_arguments(
         "test-api",
         tmp_path,
-        {"coverage_source": "test_source"},
+        {
+            "workflows": {
+                "test": {
+                    "coverage_source": "test_source",
+                    "python_version": "3.10",
+                    "poetry_version": "1.2.0",
+                },
+                "build": {"staging": {}, "production": {}},
+            },
+        },
         TEMPLATE_PATH,
         "fastapi",
     )

@@ -25,7 +25,7 @@ def create_deployment_file(
     template_path = (awast_path / "templates/kubernetes").absolute()
 
     values = merge_values(
-        get_default_values(template_path / "deployment.values.yaml"),
+        get_default_values(template_path / "values.yaml"),
         values,
     )
     values["name"] = deployment_name
