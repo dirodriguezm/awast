@@ -10,10 +10,11 @@ ralidator_filters_map = {}
 
 
 @pytest.fixture
-def client(mocker: MockerFixture):
+def client():
     app = create_app(
         ralidator_config=ralidator_config,
         ralidator_filters_map=ralidator_filters_map,
+        ralidator_ignore_paths=["/metrics"],
     )
     yield TestClient(app)
 
@@ -40,6 +41,7 @@ def test_app_has_ralidator(mocker: MockerFixture):
     app = create_app(
         ralidator_config=ralidator_config,
         ralidator_filters_map=ralidator_filters_map,
+        ralidator_ignore_paths=["metrics"],
     )
     client = TestClient(app)
     response = client.get("/")

@@ -119,10 +119,7 @@ def create_pyproject_file(arguments: Callable[[], CreateFileArguments]):
 
 def create_app_file(arguments: Callable[[], CreateFileArguments]):
     args = arguments()
-    values = merge_values(
-        get_default_values(Path(args.template_path) / "app.values.yaml"),
-        args.parsed_values,
-    )
+    values = args.parsed_values["app"]
     create_file(
         template_path=args.template_path / args.framework,
         template_name="app.py.jinja",
@@ -134,13 +131,14 @@ def create_app_file(arguments: Callable[[], CreateFileArguments]):
 
 def create_dockerfile(arguments: Callable[[], CreateFileArguments]):
     args = arguments()
+    values = args.parsed_values["dockerfile"]
+    values["package"] = args.name
     create_file(
         template_path=args.template_path / args.framework,
         template_name="Dockerfile.jinja",
         app_path=args.output_path,
         filename="Dockerfile",
-        package=args.name,
-        **args.parsed_values,
+        **values,
     )
 
 
@@ -157,10 +155,8 @@ def create_github_actions(arguments: Callable[[], CreateFileArguments]):
 
 def create_unittest_action(arguments: Callable[[], CreateFileArguments]):
     args = arguments()
-    values = merge_values(
-        get_default_values(Path(args.template_path) / "unit_test.values.yaml"),
-        args.parsed_values,
-    )
+    values = args.parsed_values["workflows"]["test"]
+    print(values)
     create_file(
         args.template_path,
         "unit_test.yaml.jinja",
@@ -182,12 +178,7 @@ def create_build_action(arguments: Callable[[], CreateFileArguments]):
 
 def create_build_staging_action(arguments: Callable[[], CreateFileArguments]):
     args = arguments()
-    values = merge_values(
-        get_default_values(
-            Path(args.template_path) / "build_staging.values.yaml"
-        ),
-        args.parsed_values,
-    )
+    values = args.parsed_values["workflows"]["build"]["staging"]
     values["name"] = args.name
     create_file(
         args.template_path,
@@ -202,12 +193,7 @@ def create_build_production_action(
     arguments: Callable[[], CreateFileArguments]
 ):
     args = arguments()
-    values = merge_values(
-        get_default_values(
-            Path(args.template_path) / "build_production.values.yaml"
-        ),
-        args.parsed_values,
-    )
+    values = args.parsed_values["workflows"]["build"]["production"]
     values["name"] = args.name
     create_file(
         args.template_path,
@@ -228,12 +214,26 @@ def create_move_issue_action(arguments: Callable[[], CreateFileArguments]):
     )
 
 
+def parse_default_values(
+    template_path: Path, values_file: str, parsed_values: dict
+) -> dict:
+    default_values_path = template_path / "values.yaml"
+    if values_file != "":
+        default_values_path = Path(values_file)
+
+    return merge_values(
+        get_default_values(default_values_path),
+        parsed_values,
+    )
+
+
 def new_api(
     name: str,
     template_path: Path,
     values: List[str],
     value_parser: Callable,
     framework: str,
+    values_file: str,
 ):
     base = Path.cwd()
 
@@ -242,6 +242,10 @@ def new_api(
         raise Exception("Output directory already exist.")
 
     parsed_values = value_parser(values)
+
+    parsed_values = parse_default_values(
+        template_path, values_file, parsed_values
+    )
 
     arguments = create_file_arguments(
         name, output_path, parsed_values, template_path, framework

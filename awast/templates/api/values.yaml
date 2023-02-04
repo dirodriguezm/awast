@@ -1,0 +1,31 @@
+# App setings, used in the app.py template
+app:
+  # Secret Key for authentication.
+  # Secret Key is used for validating tokens.
+  # It should be the same key used by the service that generates the tokens.
+  secret_key:
+dockerfile:
+  # Package name used to identify
+  # the module where the app is located,
+  # usually package.app:app
+  package:
+workflows:
+  build:
+    production:
+      # Name for the API
+      # This goes into the ghcr package URL
+      name:
+    staging:
+      # Name for the API
+      # This goes into the ghcr package URL
+      name:
+  test:
+    # Python Version for the GH Action
+    python_version: "3.10"
+
+    # Poetry version for the GH Action
+    poetry_version: "1.2.0"
+
+    # source package directory to get coverage from during testing
+    # this is passed to coverage command with the --source argument
+    coverage_source:

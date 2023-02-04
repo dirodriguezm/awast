@@ -3,4 +3,5 @@ from awast.core.mod_fastapi.app_factory import create_app
 app = create_app(
     ralidator_config={"SECRET_KEY"={{secret_key}}},
     ralidator_filters_map={},
+    ralidator_ignore_paths=["/metrics"]
 )
