@@ -20,11 +20,12 @@ def new_api_cli(
     name: str,
     framework: Framework = Framework.fastapi,
     set: List[str] = typer.Option([]),
+    values_file: str = "",
 ):
     print(f"Creating new API: {name}")
     print(f"Using templates for framework: {framework.value}")
     if framework.value == Framework.fastapi:
-        new_fastapi(name, set, value_parser)
+        new_fastapi(name, set, value_parser, values_file)
     if framework.value == Framework.flask:
         new_flask(name, set, value_parser)
     print("Success")
