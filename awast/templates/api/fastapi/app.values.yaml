@@ -1,0 +1,4 @@
+# Secret Key for authentication.
+# Secret Key is used for validating tokens.
+# It should be the same key used by the service that generates the tokens.
+secret_key:

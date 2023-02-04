@@ -119,12 +119,16 @@ def create_pyproject_file(arguments: Callable[[], CreateFileArguments]):
 
 def create_app_file(arguments: Callable[[], CreateFileArguments]):
     args = arguments()
+    values = merge_values(
+        get_default_values(Path(args.template_path) / "app.values.yaml"),
+        args.parsed_values,
+    )
     create_file(
         template_path=args.template_path / args.framework,
         template_name="app.py.jinja",
         app_path=args.output_path,
         filename=f"{args.name}/app.py",
-        **args.parsed_values,
+        **values,
     )
 
 

@@ -7,11 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.87.0"
+fastapi = "^0.89.1"
 typer = {extras = ["all"], version = "^0.7.0"}
 jinja2 = "^3.1.2"
 pyyaml = "^6.0"
 starlette-prometheus = "^0.9.0"
+ralidator-fastapi = { git = "https://github.com/alercebroker/ralidator-fastapi.git" }
 
 [tool.poetry.scripts]
 awast = "awast.cli.main:app"
