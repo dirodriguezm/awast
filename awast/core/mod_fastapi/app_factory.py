@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from dataclasses import dataclass
 from starlette_prometheus import metrics, PrometheusMiddleware
+from ralidator_fastapi.ralidator_fastapi import RalidatorStarlette
 
 
 def create_app(*args, **kwargs):
@@ -8,7 +9,11 @@ def create_app(*args, **kwargs):
     app = FastAPI(*args, **kwargs)
     add_root(app)
     add_metrics(app)
-    add_ralidator(app)
+    add_ralidator(
+        app,
+        config=kwargs["ralidator_config"],
+        filters_map=kwargs["ralidator_filters_map"],
+    )
     return app
 
 
@@ -31,6 +36,8 @@ def add_metrics(app: FastAPI):
     app.add_route("/metrics/", metrics)
 
 
-def add_ralidator(app):
+def add_ralidator(app: FastAPI, config: dict, filters_map: dict):
     """Adds the Ralidator library extension to the app"""
-    pass
+    app.add_middleware(
+        RalidatorStarlette, config=config, filters_map=filters_map
+    )
