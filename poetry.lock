@@ -712,7 +712,7 @@ returns = "0.19.0"
 
 [package.source]
 type = "git"
-url = "git@github.com:alercebroker/ralidator-core.git"
+url = "https://github.com/alercebroker/ralidator-core.git"
 reference = "main"
 resolved_reference = "743c64a6d5643dc6504c46a19a5041de5514e65a"
 
@@ -728,13 +728,13 @@ develop = false
 
 [package.dependencies]
 fastapi = "^0.89.1"
-ralidator_core = {git = "git@github.com:alercebroker/ralidator-core.git", branch = "main"}
+ralidator_core = {git = "https://github.com/alercebroker/ralidator-core.git", branch = "main"}
 
 [package.source]
 type = "git"
 url = "https://github.com/alercebroker/ralidator-fastapi.git"
-reference = "HEAD"
-resolved_reference = "d1dd4672dfc7ad622ae3a9bba82e77cbbe6d3afb"
+reference = "main"
+resolved_reference = "1df65ffe72b80c57b4ee33e1a42bf2e01f3b63c8"
 
 [[package]]
 name = "requests"
@@ -936,4 +936,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "056c7ae59a91dd4c64983bb68ea721aee81c72b913a5b8e7e77edbdc057a6d93"
+content-hash = "46a3dc453d3ba7aa0dc16b79e23aab81e30a388aed7d8c9665d94b96b8829332"
