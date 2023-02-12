@@ -74,8 +74,20 @@ def get_default_values(values_file: Path) -> dict:
     return yaml.load(values_file.read_text(), yaml.CLoader)
 
 
+def merge_dicts(tgt, enhancer):
+    for key, val in enhancer.items():
+        if key not in tgt:
+            tgt[key] = val
+            continue
+        if isinstance(val, dict):
+            merge_dicts(tgt[key], val)
+        else:
+            tgt[key] = val
+    return tgt
+
+
 def merge_values(dict1: dict, dict2: dict):
-    return dict1 | dict2
+    return merge_dicts(dict1, dict2)
 
 
 @dataclass

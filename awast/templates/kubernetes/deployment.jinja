@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{name}}
-  namespace: web-services
+  namespace: {{namespace}}
   labels:
     name: {{name}}
 spec:
@@ -22,18 +22,18 @@ spec:
                   - key: eks.amazonaws.com/nodegroup
                     operator: In
                     values:
-                      - {{environment}}-web-services
+                      - {{nodegroup}}
     spec:
       containers:
         - name: {{name}}
-          image: ghcr.io/alercebroker/{{name}}:{{version|default("latest")}}
+          image: ghcr.io/alercebroker/{{image.name}}:{{image.version}}
           imagePullPolicy: Always
           ports:
-            - containerPort: {{port|default("8000")}}
+            - containerPort: {{containerPort}}
           {% if resources.requests %}
           resources:
             requests:
-              memory: {{resources.requests.mem}}
+              memory: {{resources.requests.memory}}
               cpu: {{resources.requests.cpu}}
           {% endif %}
       restartPolicy: Always

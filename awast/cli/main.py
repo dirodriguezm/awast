@@ -32,9 +32,11 @@ def new_api_cli(
 
 
 @app.command(name="new-deployment")
-def new_deployment_cli(name: str, set: List[str] = typer.Option([])):
+def new_deployment_cli(
+    name: str, set: List[str] = typer.Option([]), values_file: str = ""
+):
     print(f"Creating new deployment: {name}")
-    new_deployment(name, set, value_parser)
+    new_deployment(name, set, value_parser, values_file)
     print("Success")
 
 
