@@ -27,7 +27,7 @@ def new_api_cli(
     if framework.value == Framework.fastapi:
         new_fastapi(name, set, value_parser, values_file)
     if framework.value == Framework.flask:
-        new_flask(name, set, value_parser)
+        new_flask(name, set, value_parser, values_file)
     print("Success")
 
 
