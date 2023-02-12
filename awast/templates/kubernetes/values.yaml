@@ -1,19 +1,24 @@
 ---
-deployment:
-  # Name for the API
+# Name for the API
+name:
+
+# Namespace for all resources
+namespace: web-services
+
+# nodegroup name used to define node affinity
+nodegroup:
+
+image:
+  # Name of the API image
   name:
-
-  # Environment used to define node affinity
-  environment:
-
   # Version for the API container image
   version: latest
 
-  # Port that the API runs in
-  port: 8000
+# Port that the API runs in
+containerPort: 8000
 
-  # Resource requests for the container
-  resources:
-    requests:
-      memory:
-      cpu:
+# Resource requests for the main container
+resources:
+  requests:
+    memory:
+    cpu:
