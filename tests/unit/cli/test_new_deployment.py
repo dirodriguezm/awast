@@ -1,15 +1,22 @@
-from awast.cli.kubernetes.new_deployment import pathlib as tpathlib
+from awast.cli.kubernetes.new_deployment import (
+    create_service_file,
+    pathlib as tpathlib,
+)
 from awast.cli.kubernetes.new_deployment import (
     new_deployment,
     create_deployment_file,
 )
 from awast.cli.utils import (
-    CreateFileArguments,
     create_file_arguments,
     value_parser,
 )
 import pathlib
 from pytest_mock import MockerFixture
+from .utils import (
+    assert_call_args,
+    assert_deployment_values,
+    assert_service_values,
+)
 
 
 TESTS_PATH = pathlib.Path.cwd() / "tests"
@@ -20,6 +27,9 @@ TEMPLATE_PATH = (pathlib.Path.cwd() / "awast/templates/kubernetes").resolve()
 def test_new_deployment_with_values(mocker: MockerFixture):
     create_deployment_file_mock = mocker.patch(
         "awast.cli.kubernetes.new_deployment.create_deployment_file"
+    )
+    create_service_file_mock = mocker.patch(
+        "awast.cli.kubernetes.new_deployment.create_service_file"
     )
     getcwd = mocker.patch.object(tpathlib.Path, "cwd")
     getcwd.return_value = pathlib.Path("/tmp")
@@ -35,16 +45,9 @@ def test_new_deployment_with_values(mocker: MockerFixture):
         "",
     )
     create_deployment_file_mock.assert_called()
-    call_args = create_deployment_file_mock.call_args[0][0]
-    assert call_args().name == "test-api"
-    assert call_args().parsed_values == {
-        "name": "test-api",
-        "resources": {"requests": {"cpu": "10m", "memory": None}},
-        "image": {"name": "test", "version": "latest"},
-        "containerPort": 8000,
-        "namespace": "web-services",
-        "nodegroup": "test",
-    }
+    create_service_file_mock.assert_called()
+    assert_call_args(create_deployment_file_mock.call_args[0][0])
+    assert_call_args(create_service_file_mock.call_args[0][0])
 
 
 def test_create_deployment_file(tmp_path):
@@ -65,15 +68,19 @@ def test_create_deployment_file(tmp_path):
     )
     create_deployment_file(arguments)
     assert_deployment_values(
-        tmp_path / "test-api" / "deployment" / "deployment.yaml"
+        tmp_path / "test-api" / "deployment" / "test-api.yaml"
     )
 
 
-def assert_deployment_values(path):
-    text = path.read_text()
-    assert "name: test-api" in text
-    assert "image: ghcr.io/alercebroker/test-api:latest" in text
-    assert "test-nodegroup" in text
-    assert "containerPort: 8000" in text
-    assert "memory: 10M" in text
-    assert "cpu: 10m" in text
+def test_create_service_file(tmp_path):
+    (tmp_path / "test-api" / "service").mkdir(parents=True)
+    values = {"name": "test-api", "namespace": "test"}
+    arguments = create_file_arguments(
+        "test-api",
+        tmp_path / "test-api",
+        values,
+        TEMPLATE_PATH,
+        "service",
+    )
+    create_service_file(arguments)
+    assert_service_values(tmp_path / "test-api" / "service" / "test-api.yaml")
