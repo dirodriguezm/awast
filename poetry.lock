@@ -252,6 +252,9 @@ files = [
     {file = "coverage-6.5.0.tar.gz", hash = "sha256:f642e90754ee3e06b0e7e51bce3379590e76b7f76b708e1a71ff043f87025c84"},
 ]
 
+[package.dependencies]
+tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.11.0a6\" and extra == \"toml\""}
+
 [package.extras]
 toml = ["tomli"]
 
@@ -606,6 +609,25 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-cov"
+version = "4.0.0"
+description = "Pytest plugin for measuring coverage."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pytest-cov-4.0.0.tar.gz", hash = "sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470"},
+    {file = "pytest_cov-4.0.0-py3-none-any.whl", hash = "sha256:2feb1b751d66a8bd934e5edfa2e961d11309dc37b73b0eabe73b5945fee20f6b"},
+]
+
+[package.dependencies]
+coverage = {version = ">=5.2.1", extras = ["toml"]}
+pytest = ">=4.6"
+
+[package.extras]
+testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
+
+[[package]]
 name = "pytest-mock"
 version = "3.10.0"
 description = "Thin-wrapper around the mock package for easier use with pytest"
@@ -690,7 +712,7 @@ returns = "0.19.0"
 
 [package.source]
 type = "git"
-url = "git@github.com:alercebroker/ralidator-core.git"
+url = "https://github.com/alercebroker/ralidator-core.git"
 reference = "main"
 resolved_reference = "743c64a6d5643dc6504c46a19a5041de5514e65a"
 
@@ -706,13 +728,13 @@ develop = false
 
 [package.dependencies]
 fastapi = "^0.89.1"
-ralidator_core = {git = "git@github.com:alercebroker/ralidator-core.git", branch = "main"}
+ralidator_core = {git = "https://github.com/alercebroker/ralidator-core.git", branch = "main"}
 
 [package.source]
 type = "git"
 url = "https://github.com/alercebroker/ralidator-fastapi.git"
-reference = "HEAD"
-resolved_reference = "d1dd4672dfc7ad622ae3a9bba82e77cbbe6d3afb"
+reference = "main"
+resolved_reference = "1df65ffe72b80c57b4ee33e1a42bf2e01f3b63c8"
 
 [[package]]
 name = "requests"
@@ -914,4 +936,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d3a740429e274444cddb3919e880c7acad59b67ebd9604e9293ab5157203c757"
+content-hash = "46a3dc453d3ba7aa0dc16b79e23aab81e30a388aed7d8c9665d94b96b8829332"
